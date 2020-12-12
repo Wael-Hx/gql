@@ -24,6 +24,8 @@ async function startServer() {
     await connectDB();
     const res = await server.listen({ port: PORT });
     console.log(`server running at ${res.url}`);
-  } catch (err) {}
+  } catch (err) {
+    console.error(err);
+  }
 }
 startServer();
