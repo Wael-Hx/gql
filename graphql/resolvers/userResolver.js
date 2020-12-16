@@ -1,4 +1,4 @@
-const { UserInputError } = require("apollo-server");
+const { UserInputError, AuthenticationError } = require("apollo-server");
 const User = require("../../db/models/User");
 const generateToken = require("../../utils/auth");
 const { validateInput, validateLogin } = require("../../utils/validateInput");
@@ -15,9 +15,24 @@ module.exports = {
         return err.message;
       }
     },
-    getUserById: async (_, { id }, context, info) => {
+    getUserById: async (_, { id }, context) => {
+      if (!context.userId) {
+        return new AuthenticationError("not authorized");
+      }
       try {
         const user = await User.findById(id);
+        return user;
+      } catch (err) {
+        console.error(err);
+        return err.message;
+      }
+    },
+    me: async (_, __, context) => {
+      if (!context.userId) {
+        return new AuthenticationError("not authorized");
+      }
+      try {
+        const user = await User.findById(context.userId);
         return user;
       } catch (err) {
         console.error(err);

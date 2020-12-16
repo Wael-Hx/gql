@@ -1,4 +1,4 @@
-const { ApolloServer } = require("apollo-server"),
+const { ApolloServer, AuthenticationError } = require("apollo-server"),
   typeDefs = require("./graphql/typeDefs"),
   resolvers = require("./graphql/resolvers"),
   connectDB = require("./db/config"),
@@ -11,10 +11,17 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: ({ req }) => {
-    const token = req.headers.authorization || "";
-    if (token) {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+      return null;
+    }
+    try {
+      const token = authHeader.split(" ")[1] || "";
       const payload = verify(token, process.env.JWT_SECRET);
       return payload;
+    } catch (err) {
+      return null;
     }
   },
 });

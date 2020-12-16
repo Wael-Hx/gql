@@ -25,6 +25,7 @@ module.exports = gql`
   }
   type Query {
     users: [User!]!
-    getUserById(id: ID!): User!
+    getUserById(id: ID!): User
+    me: User
   }
 `;
