@@ -1,8 +1,10 @@
 const { UserInputError } = require("apollo-server");
 const User = require("../../db/models/User");
+const generateToken = require("../../utils/auth");
 const { validateInput, validateLogin } = require("../../utils/validateInput");
+require("dotenv").config();
 
-module.exports = resolvers = {
+module.exports = {
   Query: {
     users: async (_, __, context) => {
       try {
@@ -45,7 +47,7 @@ module.exports = resolvers = {
         return err.message;
       }
     },
-    login: async (_, { credentials: { email, password } }) => {
+    login: async (_, { credentials: { email, password } }, { res }) => {
       try {
         const { valid, message } = validateLogin({ email, password });
         if (!valid) {
@@ -59,7 +61,15 @@ module.exports = resolvers = {
         } else {
           const isMatch = await user.comparePassword(password);
           if (isMatch) {
-            return user;
+            const token = generateToken(user.id, "30m", process.env.JWT_SECRET);
+            res.cookie(
+              "UAT",
+              generateToken(user.id, "3d", process.env.JWT_RF_SECRET),
+              {
+                httpOnly: true,
+              }
+            );
+            return { token };
           } else {
             return new UserInputError(
               "make sure you type the correct credentials"

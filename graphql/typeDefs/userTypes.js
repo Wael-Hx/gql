@@ -9,6 +9,9 @@ module.exports = gql`
     email: String!
     password: String!
   }
+  type AccessToken {
+    token: String!
+  }
   type User {
     id: ID!
     email: String!
@@ -17,11 +20,11 @@ module.exports = gql`
     updatedAt: String!
   }
   type Mutation {
-    register(credentials: Credentials!): User
-    login(credentials: LoginData!): User
+    register(credentials: Credentials!): User!
+    login(credentials: LoginData!): AccessToken!
   }
   type Query {
     users: [User!]!
-    getUserById(id: ID!): User
+    getUserById(id: ID!): User!
   }
 `;

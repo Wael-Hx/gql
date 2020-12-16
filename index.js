@@ -1,15 +1,27 @@
 const { ApolloServer } = require("apollo-server"),
-  users = require("./graphql/typeDefs/user"),
-  resolvers = require("./graphql/resolvers/user"),
-  connectDB = require("./db/config");
+  typeDefs = require("./graphql/typeDefs"),
+  resolvers = require("./graphql/resolvers"),
+  connectDB = require("./db/config"),
+  { verify } = require("jsonwebtoken");
+require("dotenv").config();
+
 const PORT = 5000;
 
 const server = new ApolloServer({
-  typeDefs: [users],
+  typeDefs,
   resolvers,
+  context: ({ req, res }) => {
+    const token = req.headers.authorization || "";
+    if (token) {
+      const payload = verify(token, process.env.JWT_SECRET);
+      return { req, res, payload };
+    }
+
+    return { req, res };
+  },
 });
 
-async function startServer() {
+(async function startServer() {
   try {
     await connectDB();
     const res = await server.listen({ port: PORT });
@@ -17,5 +29,4 @@ async function startServer() {
   } catch (err) {
     console.error(err);
   }
-}
-startServer();
+})();
