@@ -1,3 +1,4 @@
-const userResolver = require("./userResolver");
+const postResolvers = require("./postResolvers");
+const userResolvers = require("./userResolver");
 
-module.exports = [userResolver];
+module.exports = [userResolvers, postResolvers];

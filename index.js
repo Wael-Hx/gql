@@ -1,4 +1,4 @@
-const { ApolloServer, AuthenticationError } = require("apollo-server"),
+const { ApolloServer } = require("apollo-server"),
   typeDefs = require("./graphql/typeDefs"),
   resolvers = require("./graphql/resolvers"),
   connectDB = require("./db/config"),
