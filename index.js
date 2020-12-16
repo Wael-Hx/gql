@@ -10,14 +10,12 @@ const PORT = 5000;
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req, res }) => {
+  context: ({ req }) => {
     const token = req.headers.authorization || "";
     if (token) {
       const payload = verify(token, process.env.JWT_SECRET);
-      return { req, res, payload };
+      return payload;
     }
-
-    return { req, res };
   },
 });
 
