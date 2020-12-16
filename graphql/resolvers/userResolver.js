@@ -38,16 +38,15 @@ module.exports = {
         }
         const newUser = new User({ username, email, password });
         const res = await newUser.save();
-        return {
-          ...res._doc,
-          id: res._id,
-        };
+        const token = generateToken(res.id, "3d", process.env.JWT_SECRET);
+
+        return { token };
       } catch (err) {
         console.error(err);
         return err.message;
       }
     },
-    login: async (_, { credentials: { email, password } }, { res }) => {
+    login: async (_, { credentials: { email, password } }) => {
       try {
         const { valid, message } = validateLogin({ email, password });
         if (!valid) {
@@ -61,14 +60,7 @@ module.exports = {
         } else {
           const isMatch = await user.comparePassword(password);
           if (isMatch) {
-            const token = generateToken(user.id, "30m", process.env.JWT_SECRET);
-            res.cookie(
-              "UAT",
-              generateToken(user.id, "3d", process.env.JWT_RF_SECRET),
-              {
-                httpOnly: true,
-              }
-            );
+            const token = generateToken(user.id, "3d", process.env.JWT_SECRET);
             return { token };
           } else {
             return new UserInputError(
