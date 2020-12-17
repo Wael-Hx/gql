@@ -4,7 +4,9 @@ module.exports = gql`
   type Post {
     user: User!
     title: String!
-    images: [String]!
+    type: String
+    flairs: [String!]
+    images: [String]
     body: String!
     createdAt: String!
     updatedAt: String!
@@ -14,6 +16,7 @@ module.exports = gql`
     user: ID!
     title: String!
     type: String!
+    flairs: [String!]
     images: [String!]
     body: String!
   }

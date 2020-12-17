@@ -20,6 +20,10 @@ const PostSchema = new Schema(
       type: String,
       required: true,
     },
+    flairs: {
+      type: [String],
+      default: [],
+    },
     images: [String],
     body: {
       type: String,
