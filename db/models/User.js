@@ -23,6 +23,10 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
+    roles: {
+      type: [String],
+      default: ["user"],
+    },
   },
   opts
 );

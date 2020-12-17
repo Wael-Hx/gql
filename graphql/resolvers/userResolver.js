@@ -1,12 +1,16 @@
 const { UserInputError, AuthenticationError } = require("apollo-server");
 const User = require("../../db/models/User");
-const generateToken = require("../../utils/auth");
+const { generateToken, checkAuth } = require("../../utils/auth");
 const { validateInput, validateLogin } = require("../../utils/validateInput");
 require("dotenv").config();
 
 module.exports = {
   Query: {
     users: async (_, __, context) => {
+      const { authorized } = await checkAuth(context);
+      if (!authorized) {
+        return new AuthenticationError("not authorized");
+      }
       try {
         const users = await User.find();
         return users;
