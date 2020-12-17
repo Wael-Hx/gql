@@ -5,8 +5,8 @@ module.exports = gql`
     user: User!
     title: String!
     type: String
-    flairs: [String!]
-    images: [String]
+    flairs: [String!]!
+    images: [String]!
     body: String!
     createdAt: String!
     updatedAt: String!
@@ -16,14 +16,14 @@ module.exports = gql`
     user: ID!
     title: String!
     type: String!
-    flairs: [String!]
-    images: [String!]
+    flairs: [String]!
+    images: [String]!
     body: String!
   }
 
   extend type Query {
     getPostById(id: ID!): Post
-    getPosts: [Post!]!
+    getPosts: [Post]!
   }
 
   extend type Mutation {

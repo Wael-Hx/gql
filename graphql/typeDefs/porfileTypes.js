@@ -11,8 +11,8 @@ module.exports = gql`
     user: User!
     bio: String
     avatar: String
-    posts: [Post]
-    saved: [Post]
-    liked: [Post]
+    posts: [Post]!
+    saved: [Post]!
+    liked: [Post]!
   }
 `;
