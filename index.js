@@ -2,27 +2,17 @@ const { ApolloServer } = require("apollo-server"),
   typeDefs = require("./graphql/typeDefs"),
   resolvers = require("./graphql/resolvers"),
   connectDB = require("./db/config"),
-  { verify } = require("jsonwebtoken");
-require("dotenv").config();
+  { getToken } = require("./utils/auth");
 
 const PORT = 5000;
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req }) => {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader) {
-      return null;
-    }
-    try {
-      const token = authHeader.split(" ")[1] || "";
-      const payload = verify(token, process.env.JWT_SECRET);
-      return payload;
-    } catch (err) {
-      return null;
-    }
+  context: ({ req, res }) => ({ payload: getToken(req.headers), req, res }),
+  cors: {
+    origin: "http://localhost:3000",
+    credentials: true,
   },
 });
 

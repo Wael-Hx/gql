@@ -6,8 +6,8 @@ require("dotenv").config();
 
 module.exports = {
   Query: {
-    users: async (_, __, context) => {
-      const { authorized } = await checkAuth(context);
+    users: async (_, __, { payload }) => {
+      const { authorized } = await checkAuth(payload);
       if (!authorized) {
         return new AuthenticationError("not authorized");
       }
@@ -16,11 +16,11 @@ module.exports = {
         return users;
       } catch (err) {
         console.error(err);
-        return err.message;
+        return err;
       }
     },
-    getUserById: async (_, { id }, context) => {
-      if (!context.userId) {
+    getUserById: async (_, { id }, { payload }) => {
+      if (!payload.userId) {
         return new AuthenticationError("not authorized");
       }
       try {
@@ -28,19 +28,19 @@ module.exports = {
         return user;
       } catch (err) {
         console.error(err);
-        return err.message;
+        return err;
       }
     },
-    me: async (_, __, context) => {
-      if (!context.userId) {
+    me: async (_, __, { payload }) => {
+      if (!payload.userId) {
         return new AuthenticationError("not authorized");
       }
       try {
-        const user = await User.findById(context.userId);
+        const user = await User.findById(payload.userId);
         return user;
       } catch (err) {
         console.error(err);
-        return err.message;
+        return err;
       }
     },
   },
@@ -62,10 +62,10 @@ module.exports = {
         return { token };
       } catch (err) {
         console.error(err);
-        return err.message;
+        return err;
       }
     },
-    login: async (_, { credentials: { email, password } }) => {
+    login: async (_, { credentials: { email, password } }, { res }) => {
       try {
         const { valid, message } = validateLogin({ email, password });
         if (!valid) {
@@ -80,6 +80,7 @@ module.exports = {
           const isMatch = await user.comparePassword(password);
           if (isMatch) {
             const token = generateToken(user.id, "3d", process.env.JWT_SECRET);
+            res.cookie("UAT", token, { httpOnly: true });
             return { token };
           } else {
             return new UserInputError(
@@ -89,7 +90,7 @@ module.exports = {
         }
       } catch (err) {
         console.error(err);
-        return err.message;
+        return err;
       }
     },
   },
