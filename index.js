@@ -40,13 +40,15 @@ const PORT = 5000;
     typeDefs,
     resolvers,
     context: ({ req, res }) => ({ userId: getSession(req.session), req, res }),
+  });
+
+  apolloServer.applyMiddleware({
+    app,
     cors: {
       origin: "http://localhost:3000",
       credentials: true,
     },
   });
-
-  apolloServer.applyMiddleware({ app });
 
   app.get("/", async (_, res) => res.send("hello"));
   try {
