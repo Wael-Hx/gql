@@ -1,6 +1,5 @@
 const { sign } = require("jsonwebtoken"),
-  User = require("../db/models/User"),
-  { verify } = require("jsonwebtoken");
+  User = require("../db/models/User");
 require("dotenv").config();
 
 const generateToken = (id, period, secret) => {
@@ -9,12 +8,12 @@ const generateToken = (id, period, secret) => {
   });
 };
 
-const checkAuth = async (context) => {
-  if (!context.userId) {
+const checkAuth = async (userId) => {
+  if (!userId) {
     return { authorized: false };
   }
   try {
-    const user = await User.findById(context.userId);
+    const user = await User.findById(userId);
     if (user.roles.includes("admin")) {
       return { authorized: true };
     } else {
@@ -26,19 +25,13 @@ const checkAuth = async (context) => {
   }
 };
 
-const getToken = (headers) => {
-  const authHeader = headers.cookie;
+const getSession = (session) => {
+  const userId = session.userId;
 
-  if (!authHeader) {
+  if (!userId) {
     return null;
   }
-  try {
-    const token = authHeader.slice(4);
-    const payload = verify(token, process.env.JWT_SECRET);
-    return payload;
-  } catch (err) {
-    return null;
-  }
+  return userId;
 };
 
-module.exports = { checkAuth, generateToken, getToken };
+module.exports = { checkAuth, generateToken, getSession };

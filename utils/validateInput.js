@@ -12,7 +12,7 @@ function validateInput({ username, email, password }) {
   if (
     regexUsername.test(username) ||
     username.length > 10 ||
-    username.length < 4
+    username.length < 2
   ) {
     return {
       valid: false,

@@ -6,8 +6,8 @@ require("dotenv").config();
 
 module.exports = {
   Query: {
-    users: async (_, __, { payload }) => {
-      const { authorized } = await checkAuth(payload);
+    users: async (_, __, { userId }) => {
+      const { authorized } = await checkAuth(userId);
       if (!authorized) {
         return new AuthenticationError("not authorized");
       }
@@ -19,8 +19,8 @@ module.exports = {
         return err;
       }
     },
-    getUserById: async (_, { id }, { payload }) => {
-      if (!payload.userId) {
+    getUserById: async (_, { id }, { userId }) => {
+      if (!userId) {
         return new AuthenticationError("not authorized");
       }
       try {
@@ -31,12 +31,12 @@ module.exports = {
         return err;
       }
     },
-    me: async (_, __, { payload }) => {
-      if (!payload.userId) {
+    me: async (_, __, { userId }) => {
+      if (!userId) {
         return new AuthenticationError("not authorized");
       }
       try {
-        const user = await User.findById(payload.userId);
+        const user = await User.findById(userId);
         return user;
       } catch (err) {
         console.error(err);
@@ -45,7 +45,11 @@ module.exports = {
     },
   },
   Mutation: {
-    register: async (_, { credentials: { username, email, password } }) => {
+    register: async (
+      _,
+      { credentials: { username, email, password } },
+      { req }
+    ) => {
       try {
         const { valid, message } = validateInput({ username, email, password });
         if (!valid) {
@@ -57,15 +61,15 @@ module.exports = {
         }
         const newUser = new User({ username, email, password });
         const res = await newUser.save();
-        const token = generateToken(res.id, "3d", process.env.JWT_SECRET);
+        req.session.userId = res.id;
 
-        return { token };
+        return { id: res.id, ...res._doc };
       } catch (err) {
         console.error(err);
         return err;
       }
     },
-    login: async (_, { credentials: { email, password } }, { res }) => {
+    login: async (_, { credentials: { email, password } }, { req }) => {
       try {
         const { valid, message } = validateLogin({ email, password });
         if (!valid) {
@@ -79,9 +83,9 @@ module.exports = {
         } else {
           const isMatch = await user.comparePassword(password);
           if (isMatch) {
-            const token = generateToken(user.id, "3d", process.env.JWT_SECRET);
-            res.cookie("UAT", token, { httpOnly: true });
-            return { token };
+            req.session.userId = user.id;
+
+            return user;
           } else {
             return new UserInputError(
               "make sure you type the correct credentials"
