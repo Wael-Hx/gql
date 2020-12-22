@@ -23,8 +23,8 @@ module.exports = {
     },
   },
   Mutation: {
-    createPost: async (_, { content }, context) => {
-      if (!context.userId) {
+    createPost: async (_, { content }, { userId }) => {
+      if (!userId) {
         return new AuthenticationError("not authorized");
       }
       try {
