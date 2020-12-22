@@ -43,8 +43,28 @@ module.exports = {
       }
       try {
         const newProfile = new Profile({ user: userId, ...userProfile });
-        const res = await newProfile.save();
-        const profile = await res
+        await newProfile.save();
+        const profile = await newProfile
+          .populate("user", ["_id", "username", "createdAt", "updatedAt"])
+          .execPopulate();
+        return profile;
+      } catch (err) {
+        console.error(err);
+        return err;
+      }
+    },
+    updateProfile: async (_, { userProfile }, { userId }) => {
+      if (!userId) {
+        return new AuthenticationError("not authorized");
+      }
+      try {
+        const updatedProfile = await Profile.findOneAndUpdate(
+          { user: userId },
+          { $set: userProfile },
+          { new: true }
+        );
+        await updatedProfile.save();
+        const profile = await updatedProfile
           .populate("user", ["_id", "username", "createdAt", "updatedAt"])
           .execPopulate();
         return profile;
