@@ -16,18 +16,24 @@ const ProfileSchema = new Schema(
       type: String,
       default: "",
     },
-    posts: {
-      type: Schema.Types.ObjectId,
-      ref: "Post",
-    },
-    saved: {
-      type: Schema.Types.ObjectId,
-      ref: "Post",
-    },
-    liked: {
-      type: Schema.Types.ObjectId,
-      ref: "Post",
-    },
+    posts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Post",
+      },
+    ],
+    saved: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Post",
+      },
+    ],
+    liked: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Post",
+      },
+    ],
   },
   opts
 );
