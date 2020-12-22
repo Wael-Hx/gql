@@ -1,6 +1,6 @@
 const { UserInputError, AuthenticationError } = require("apollo-server");
 const User = require("../../db/models/User");
-const { generateToken, checkAuth } = require("../../utils/auth");
+const { checkAuth } = require("../../utils/auth");
 const { validateInput, validateLogin } = require("../../utils/validateInput");
 require("dotenv").config();
 
