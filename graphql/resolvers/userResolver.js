@@ -33,7 +33,7 @@ module.exports = {
     },
     me: async (_, __, { userId }) => {
       if (!userId) {
-        return new AuthenticationError("not authorized");
+        return null;
       }
       try {
         const user = await User.findById(userId);
@@ -96,6 +96,19 @@ module.exports = {
         console.error(err);
         return err;
       }
+    },
+    logout: async (_, __, { req, res }) => {
+      return new Promise((resolve) => {
+        req.session.destroy((err) => {
+          if (err) {
+            console.error(err);
+            resolve("something wrong happened");
+            return;
+          }
+          res.clearCookie("UAT");
+          resolve("ok");
+        });
+      });
     },
   },
 };
