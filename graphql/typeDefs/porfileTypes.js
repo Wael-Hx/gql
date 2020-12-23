@@ -2,11 +2,9 @@ const { gql } = require("apollo-server");
 
 module.exports = gql`
   input ProfileInput {
+    displayName: String
     bio: String
     avatar: String
-    posts: ID
-    saved: ID
-    liked: ID
   }
 
   type UserProfile {
@@ -18,6 +16,7 @@ module.exports = gql`
 
   type Profile {
     user: UserProfile!
+    displayName: String
     bio: String
     avatar: String
     posts: [Post]
