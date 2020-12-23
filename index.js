@@ -33,6 +33,7 @@ const PORT = 5000;
       secret: process.env.SECRET,
       resave: false,
       saveUninitialized: false,
+      unset: "destroy",
     })
   );
 
