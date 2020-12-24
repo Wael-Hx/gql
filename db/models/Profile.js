@@ -11,6 +11,11 @@ const ProfileSchema = new Schema(
       ref: "User",
       required: true,
     },
+    displayName: {
+      type: String,
+      trim: true,
+      default: "",
+    },
     bio: String,
     avatar: {
       type: String,
