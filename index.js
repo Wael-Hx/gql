@@ -46,7 +46,7 @@ const PORT = 5000;
   apolloServer.applyMiddleware({
     app,
     cors: {
-      origin: "http://localhost:3000",
+      origin: [process.env.ORIGIN, process.env.ORIGIN2],
       credentials: true,
     },
   });
