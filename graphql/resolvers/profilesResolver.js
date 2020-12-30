@@ -1,5 +1,10 @@
-const { AuthenticationError, ApolloError } = require("apollo-server");
+const {
+  AuthenticationError,
+  ApolloError,
+  UserInputError,
+} = require("apollo-server");
 const Profile = require("../../db/models/Profile");
+const { removeEmptyValues } = require("../../utils/validateInput");
 
 module.exports = {
   Query: {
@@ -41,6 +46,9 @@ module.exports = {
       if (!userId) {
         return new AuthenticationError("not authorized");
       }
+      if (userProfile.displayName.length > 20) {
+        return new UserInputError("display name is more than 20 characters");
+      }
       try {
         const newProfile = new Profile({ user: userId, ...userProfile });
         await newProfile.save();
@@ -57,10 +65,17 @@ module.exports = {
       if (!userId) {
         return new AuthenticationError("not authorized");
       }
+      if (userProfile.displayName.length > 20) {
+        return new UserInputError("display name is more than 20 characters");
+      }
+      const formattedProfile = removeEmptyValues(userProfile);
+      if (Object.keys(formattedProfile).length === 0) {
+        return new UserInputError("cannot update an empty profile");
+      }
       try {
         const updatedProfile = await Profile.findOneAndUpdate(
           { user: userId },
-          { $set: userProfile },
+          { $set: formattedProfile },
           { new: true }
         );
         await updatedProfile.save();
