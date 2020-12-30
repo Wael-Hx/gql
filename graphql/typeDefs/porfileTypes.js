@@ -27,6 +27,7 @@ module.exports = gql`
   extend type Query {
     getProfileById(id: ID!): Profile
     myProfile: Profile
+    getAllProfiles: [Profile]
   }
 
   extend type Mutation {

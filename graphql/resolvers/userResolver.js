@@ -1,47 +1,22 @@
-const { UserInputError, AuthenticationError } = require("apollo-server");
+const { UserInputError } = require("apollo-server");
+const Users = require("../../models/users");
 const User = require("../../db/models/User");
-const { checkAuth } = require("../../utils/auth");
 const { validateInput, validateLogin } = require("../../utils/validateInput");
 require("dotenv").config();
 
 module.exports = {
   Query: {
     users: async (_, __, { userId }) => {
-      const { authorized } = await checkAuth(userId);
-      if (!authorized) {
-        return new AuthenticationError("not authorized");
-      }
-      try {
-        const users = await User.find();
-        return users;
-      } catch (err) {
-        console.error(err);
-        return err;
-      }
+      let users = await Users.getAllUsers(userId);
+      return users;
     },
     getUserById: async (_, { id }, { userId }) => {
-      if (!userId) {
-        return new AuthenticationError("not authorized");
-      }
-      try {
-        const user = await User.findById(id);
-        return user;
-      } catch (err) {
-        console.error(err);
-        return err;
-      }
+      let user = await Users.getUserById(id, userId);
+      return user;
     },
     me: async (_, __, { userId }) => {
-      if (!userId) {
-        return null;
-      }
-      try {
-        const user = await User.findById(userId);
-        return user;
-      } catch (err) {
-        console.error(err);
-        return err;
-      }
+      let user = await Users.getUser(userId);
+      return user;
     },
   },
   Mutation: {
