@@ -10,8 +10,8 @@ function validateInput({ username, email, password }) {
   }
 
   if (
-    regexUsername.test(username) ||
     username.length > 10 ||
+    regexUsername.test(username) ||
     username.length < 2
   ) {
     return {
@@ -25,7 +25,7 @@ function validateInput({ username, email, password }) {
       message: "min password length is 6",
     };
   }
-  if (!regexEmail.test(email)) {
+  if (email.length > 20 || !regexEmail.test(email)) {
     return {
       valid: false,
       message: "invalid email",
@@ -45,7 +45,7 @@ function validateLogin({ email, password }) {
       message: "invalid credentials",
     };
   }
-  if (!regexEmail.test(email)) {
+  if (email.length > 20 || !regexEmail.test(email)) {
     return {
       valid: false,
       message: "invalid email",
@@ -64,4 +64,9 @@ function validateLogin({ email, password }) {
   };
 }
 
-module.exports = { validateLogin, validateInput };
+const removeEmptyValues = (obj) => {
+  Object.keys(obj).forEach((k) => obj[k] === "" && delete obj[k]);
+  return obj;
+};
+
+module.exports = { validateLogin, validateInput, removeEmptyValues };
