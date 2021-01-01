@@ -1,11 +1,27 @@
-const { sign } = require("jsonwebtoken"),
-  User = require("../db/models/User");
+const { sign, verify } = require("jsonwebtoken");
+const User = require("../db/models/User");
+const Token = require("../db/models/Token");
 require("dotenv").config();
 
 const generateToken = (id, period, secret) => {
   return sign({ userId: id }, secret, {
     expiresIn: period,
   });
+};
+
+const getUserToken = (headers) => {
+  const authHeader = headers["authorization"];
+  if (!authHeader) {
+    return null;
+  }
+  const token = authHeader.split(" ")[1];
+  try {
+    const payload = verify(token, process.env.JWT_SECRET);
+    return payload.userId;
+  } catch (err) {
+    console.error(err.message);
+    return null;
+  }
 };
 
 const checkAuth = async (userId) => {
@@ -25,13 +41,4 @@ const checkAuth = async (userId) => {
   }
 };
 
-const getSession = (session) => {
-  const userId = session.userId;
-
-  if (!userId) {
-    return null;
-  }
-  return userId;
-};
-
-module.exports = { checkAuth, generateToken, getSession };
+module.exports = { checkAuth, generateToken, getUserToken };

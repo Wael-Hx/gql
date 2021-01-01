@@ -1,46 +1,25 @@
 const { ApolloServer } = require("apollo-server-express"),
   app = require("express")(),
-  session = require("express-session"),
   connectDB = require("./db/config");
-MongoDBStore = require("connect-mongodb-session")(session);
 
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
-const { getSession } = require("./utils/auth");
+const { getUserToken, generateToken } = require("./utils/auth");
+const authMiddleware = require("./middlewares/authMiddlware");
+const Token = require("./db/models/Token");
 require("dotenv").config();
 
 const PORT = 5000;
 
 (async function startServer() {
-  const store = new MongoDBStore(
-    {
-      uri: process.env.MONGO_URI,
-      collection: "sessions",
-    },
-    (error) => error && console.error(error)
-  );
-
-  app.use(
-    session({
-      name: "UAT",
-      store: store,
-      cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 7,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-      },
-      secret: process.env.SECRET,
-      resave: false,
-      saveUninitialized: false,
-      unset: "destroy",
-    })
-  );
-
   const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
-    context: ({ req, res }) => ({ userId: getSession(req.session), req, res }),
+    context: ({ req, res }) => ({
+      userId: getUserToken(req.headers),
+      req,
+      res,
+    }),
   });
 
   apolloServer.applyMiddleware({
@@ -51,7 +30,21 @@ const PORT = 5000;
     },
   });
 
-  app.get("/", async (_, res) => res.send("hello"));
+  app.get("/refresh", authMiddleware, async (req, res) => {
+    try {
+      const whiteListedToken = await Token.findOne({ id: req.user });
+      if (!whiteListedToken) {
+        return res.sendStatus(401);
+      } else {
+        let newToken = generateToken(req.user, "10m", process.env.JWT_SECRET);
+        return res.json({ token: newToken });
+      }
+    } catch (err) {
+      console.error(err.message);
+      return res.sendStatus(401);
+    }
+  });
+
   try {
     await connectDB();
 
