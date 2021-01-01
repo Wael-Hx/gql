@@ -4,9 +4,7 @@ const { ApolloServer } = require("apollo-server-express"),
 
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
-const { getUserToken, generateToken } = require("./utils/auth");
-const authMiddleware = require("./middlewares/authMiddlware");
-const Token = require("./db/models/Token");
+const { getUserToken } = require("./utils/auth");
 require("dotenv").config();
 
 const PORT = 5000;
@@ -28,21 +26,6 @@ const PORT = 5000;
       origin: [process.env.ORIGIN, process.env.ORIGIN2],
       credentials: true,
     },
-  });
-
-  app.get("/refresh", authMiddleware, async (req, res) => {
-    try {
-      const whiteListedToken = await Token.findOne({ id: req.user });
-      if (!whiteListedToken) {
-        return res.sendStatus(401);
-      } else {
-        let newToken = generateToken(req.user, "10m", process.env.JWT_SECRET);
-        return res.json({ token: newToken });
-      }
-    } catch (err) {
-      console.error(err.message);
-      return res.sendStatus(401);
-    }
   });
 
   try {

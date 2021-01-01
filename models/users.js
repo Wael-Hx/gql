@@ -7,7 +7,7 @@ const {
 const { checkAuth, generateToken } = require("../utils/auth");
 const { validateInput, validateLogin } = require("../utils/validateInput");
 
-const register = async ({ username, email, password }, response) => {
+const register = async ({ username, email, password }) => {
   try {
     const { valid, message } = validateInput({ username, email, password });
     if (!valid) {
@@ -19,23 +19,16 @@ const register = async ({ username, email, password }, response) => {
     }
     const newUser = new User({ username, email, password });
     const res = await newUser.save();
-    const token = generateToken(res.id, "10m", process.env.JWT_SECRET);
-    response.cookie(
-      "UAT",
-      generateToken(res.id, "30d", process.env.JWT_RF_SECRET),
-      {
-        httpOnly: true,
-        sameSite: "lax",
-      }
-    );
-    return { id: res.id, token: token };
+    const token = generateToken(res.id, "3d", process.env.JWT_SECRET);
+
+    return token;
   } catch (err) {
     console.error(err.message);
     return err.message;
   }
 };
 
-const login = async ({ email, password }, res) => {
+const login = async ({ email, password }) => {
   try {
     const { valid, message } = validateLogin({ email, password });
     if (!valid) {
@@ -49,13 +42,8 @@ const login = async ({ email, password }, res) => {
     } else {
       const isMatch = await user.comparePassword(password);
       if (isMatch) {
-        const token = generateToken(user.id, "10m", process.env.JWT_SECRET);
-        res.cookie(
-          "UAT",
-          generateToken(user.id, "30d", process.env.JWT_RF_SECRET),
-          { httpOnly: true, sameSite: "lax" }
-        );
-        return { id: user.id, token: token };
+        const token = generateToken(user.id, "3d", process.env.JWT_SECRET);
+        return token;
       } else {
         return new UserInputError("make sure you type the correct credentials");
       }

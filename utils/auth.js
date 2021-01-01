@@ -1,6 +1,5 @@
 const { sign, verify } = require("jsonwebtoken");
 const User = require("../db/models/User");
-const Token = require("../db/models/Token");
 require("dotenv").config();
 
 const generateToken = (id, period, secret) => {

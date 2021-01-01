@@ -23,7 +23,6 @@ module.exports = gql`
   type Mutation {
     register(credentials: Credentials!): AccessToken
     login(credentials: LoginData!): AccessToken
-    logout: String
   }
   type Query {
     users: [User!]!
