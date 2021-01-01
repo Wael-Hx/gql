@@ -16,9 +16,13 @@ module.exports = gql`
     createdAt: String!
     updatedAt: String!
   }
+
+  type AccessToken {
+    token: String!
+  }
   type Mutation {
-    register(credentials: Credentials!): User!
-    login(credentials: LoginData!): User!
+    register(credentials: Credentials!): AccessToken
+    login(credentials: LoginData!): AccessToken
     logout: String
   }
   type Query {
