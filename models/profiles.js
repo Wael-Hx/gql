@@ -28,7 +28,7 @@ const getMyProfile = async (userId) => {
 };
 const getAllProfiles = async () => {
   try {
-    const profiles = await Profile.findOne().populate("user", [
+    const profiles = await Profile.find().populate("user", [
       "_id",
       "username",
       "createdAt",

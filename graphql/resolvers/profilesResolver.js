@@ -10,7 +10,7 @@ module.exports = {
       let myProfile = await Profiles.getMyProfile(userId);
       return myProfile;
     },
-    getAllProfiles: async (_, __) => {
+    getAllProfiles: async () => {
       let profiles = await Profiles.getAllProfiles();
       return profiles;
     },
