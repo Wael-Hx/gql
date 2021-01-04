@@ -12,7 +12,7 @@ module.exports = {
         return err;
       }
     },
-    getPosts: async (_, __) => {
+    getPosts: async () => {
       try {
         const posts = await Post.find();
         return posts;
