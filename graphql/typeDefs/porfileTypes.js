@@ -15,6 +15,7 @@ module.exports = gql`
   }
 
   type Profile {
+    id: ID!
     user: UserProfile!
     displayName: String
     bio: String
