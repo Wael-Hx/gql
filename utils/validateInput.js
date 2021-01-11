@@ -1,13 +1,14 @@
+function validEmail(email){
+  const regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+   if(!email || typeof email !== "string" || !regexEmail.test(email) || email.length > 20 ){
+     return false
+   }else{
+     return true
+   }
+ }
+
 function validateInput({ username, email, password }) {
   const regexUsername = /[^\w]/g,
-    regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-  if ([username.trim(), email.trim(), password.trim()].includes("")) {
-    return {
-      valid: false,
-      message: "invalid credentials",
-    };
-  }
 
   if (
     username.length > 10 ||
@@ -25,7 +26,7 @@ function validateInput({ username, email, password }) {
       message: "min password length is 6",
     };
   }
-  if (email.length > 20 || !regexEmail.test(email)) {
+  if (!validEmail(email)) {
     return {
       valid: false,
       message: "invalid email",
@@ -37,15 +38,11 @@ function validateInput({ username, email, password }) {
   };
 }
 
+
+
 function validateLogin({ email, password }) {
-  regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  if ([email.trim(), password.trim()].includes("")) {
-    return {
-      valid: false,
-      message: "invalid credentials",
-    };
-  }
-  if (email.length > 20 || !regexEmail.test(email)) {
+  
+  if (!validEmail(email)) {
     return {
       valid: false,
       message: "invalid email",
@@ -69,4 +66,4 @@ const removeEmptyValues = (obj) => {
   return obj;
 };
 
-module.exports = { validateLogin, validateInput, removeEmptyValues };
+module.exports = { validateLogin, validateInput, removeEmptyValues , validEmail };
