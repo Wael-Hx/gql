@@ -20,6 +20,8 @@ module.exports = gql`
     register(credentials: Credentials!): User!
     login(credentials: LoginData!): User!
     logout: String
+    forgotPassword(email: String!): String
+    changePassword(token: String!, newPassword: String!): String
   }
   type Query {
     users: [User!]!
