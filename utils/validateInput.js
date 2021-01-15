@@ -1,14 +1,19 @@
-function validEmail(email){
+function validEmail(email) {
   const regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-   if(!email || typeof email !== "string" || !regexEmail.test(email) || email.length > 20 ){
-     return false
-   }else{
-     return true
-   }
- }
+  if (
+    !email ||
+    typeof email !== "string" ||
+    !regexEmail.test(email) ||
+    email.length > 20
+  ) {
+    return false;
+  } else {
+    return true;
+  }
+}
 
 function validateInput({ username, email, password }) {
-  const regexUsername = /[^\w]/g,
+  const regexUsername = /[^\w]/g;
 
   if (
     username.length > 10 ||
@@ -38,10 +43,7 @@ function validateInput({ username, email, password }) {
   };
 }
 
-
-
 function validateLogin({ email, password }) {
-  
   if (!validEmail(email)) {
     return {
       valid: false,
@@ -66,4 +68,9 @@ const removeEmptyValues = (obj) => {
   return obj;
 };
 
-module.exports = { validateLogin, validateInput, removeEmptyValues , validEmail };
+module.exports = {
+  validateLogin,
+  validateInput,
+  removeEmptyValues,
+  validEmail,
+};
