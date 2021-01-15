@@ -1,4 +1,5 @@
 const User = require("../db/models/User");
+const { sign } = require("jsonwebtoken");
 require("dotenv").config();
 
 const checkAuth = async (userId) => {
@@ -27,4 +28,11 @@ const getSession = (session) => {
   return userId;
 };
 
-module.exports = { checkAuth, getSession };
+const generateToken = (payload, period, secret) => {
+  const token = sign(payload, secret, {
+    expiresIn: period,
+  });
+  return token;
+};
+
+module.exports = { checkAuth, getSession, generateToken };
