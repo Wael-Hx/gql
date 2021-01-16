@@ -25,7 +25,7 @@ function validateInput({ username, email, password }) {
       message: "invalid username",
     };
   }
-  if (password.length < 6 || password.length > 20) {
+  if (password.length < 6) {
     return {
       valid: false,
       message: "min password length is 6",
@@ -50,7 +50,7 @@ function validateLogin({ email, password }) {
       message: "invalid email",
     };
   }
-  if (password.length < 6 || password.length > 20) {
+  if (password.length < 6) {
     return {
       valid: false,
       message: "min password length is 6",
