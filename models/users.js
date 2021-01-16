@@ -4,7 +4,11 @@ const {
   AuthenticationError,
   UserInputError,
 } = require("apollo-server");
+const nodemailer = require("nodemailer");
 const { checkAuth } = require("../utils/auth");
+const createTestAccount = require("../utils/createEmailTestAccout");
+const { verify, decode } = require("jsonwebtoken");
+const { validEmail } = require("../utils/validateInput");
 
 const register = async ({ username, email, password }, req) => {
   try {
@@ -96,6 +100,59 @@ const getAllUsers = async (userId) => {
   }
 };
 
+const sendEmail = async (subject, content, to) => {
+  let account = await createTestAccount();
+
+  let transporter = nodemailer.createTransport({
+    host: account.smtp.host,
+    port: account.smtp.port,
+    secure: account.smtp.secure,
+    auth: {
+      user: account.user,
+      pass: account.pass,
+    },
+  });
+
+  let message = {
+    from: "Test Service",
+    to,
+    subject,
+    html: content,
+  };
+
+  try {
+    let info = await transporter.sendMail(message);
+    console.log("message sent: %s", info.messageId);
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+    return "Message Sent";
+  } catch (err) {
+    console.error(err);
+    return "Cannot send Message , try later";
+  }
+};
+
+const changePassword = async (token, newPassword) => {
+  if (!token) {
+    return new ApolloError("bad request", 400);
+  } else if (!newPassword) {
+    return new UserInputError("password cannot be empty");
+  }
+  const decoded = decode(token);
+  if (!validEmail(decoded.email)) {
+    return new ApolloError("bad request", 400);
+  }
+  try {
+    const user = await User.findOne({ email: decoded.email });
+    verify(token, user.password);
+    user.password = newPassword;
+    await user.save();
+    return "password changed";
+  } catch (err) {
+    console.error(err);
+    return new ApolloError("bad request", 400);
+  }
+};
+
 module.exports = Users = {
   getUser,
   getUserById,
@@ -103,4 +160,6 @@ module.exports = Users = {
   register,
   login,
   logout,
+  sendEmail,
+  changePassword,
 };
