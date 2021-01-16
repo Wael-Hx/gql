@@ -1,6 +1,12 @@
-const { UserInputError } = require("apollo-server");
+const { UserInputError, ApolloError } = require("apollo-server");
+const User = require("../../db/models/User");
 const Users = require("../../models/users");
-const { validateInput, validateLogin } = require("../../utils/validateInput");
+const { generateToken } = require("../../utils/auth");
+const {
+  validateInput,
+  validateLogin,
+  validEmail,
+} = require("../../utils/validateInput");
 require("dotenv").config();
 
 module.exports = {
@@ -41,6 +47,33 @@ module.exports = {
     },
     logout: async (_, __, { req, res }) => {
       return Users.logout(req, res);
+    },
+    forgotPassword: async (_, { email }) => {
+      try {
+        if (!validEmail(email)) {
+          return new ApolloError("invalid email");
+        }
+        const user = await User.findOne({ email });
+        if (!user) {
+          return new ApolloError("invalid email");
+        }
+        const token = generateToken({ email }, "10m", user.password);
+        //console.log(token);
+        const message = `<a href="${process.env.ORIGIN}/forgot-password/${token}" >click here to reset your password</a>`;
+        const status = await Users.sendEmail(
+          "You requested a password change",
+          message,
+          email
+        );
+        return status;
+      } catch (err) {
+        console.error(err);
+        return err.message;
+      }
+    },
+    changePassword: async (_, { token, newPassword }) => {
+      const status = await Users.changePassword(token, newPassword);
+      return status;
     },
   },
 };
