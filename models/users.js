@@ -124,7 +124,7 @@ const sendEmail = async (subject, content, to) => {
     let info = await transporter.sendMail(message);
     console.log("message sent: %s", info.messageId);
     console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-    return "Message Sent";
+    return "Message Sent , Check your inbox";
   } catch (err) {
     console.error(err);
     return "Cannot send Message , try later";
@@ -138,6 +138,9 @@ const changePassword = async (token, newPassword) => {
     return new UserInputError("password cannot be empty");
   }
   const decoded = decode(token);
+  if (!decoded) {
+    return new ApolloError("bad request", 400);
+  }
   if (!validEmail(decoded.email)) {
     return new ApolloError("bad request", 400);
   }
@@ -149,7 +152,7 @@ const changePassword = async (token, newPassword) => {
     return "password changed";
   } catch (err) {
     console.error(err);
-    return new ApolloError("bad request", 400);
+    return new ApolloError("you're using and expired link");
   }
 };
 
