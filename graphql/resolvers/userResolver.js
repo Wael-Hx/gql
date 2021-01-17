@@ -59,7 +59,7 @@ module.exports = {
         }
         const token = generateToken({ email }, "10m", user.password);
         //console.log(token);
-        const message = `<a href="${process.env.ORIGIN}/forgot-password/${token}" >click here to reset your password</a>`;
+        const message = `<a href="${process.env.ORIGIN}/reset-password/${token}" >click here to reset your password</a>`;
         const status = await Users.sendEmail(
           "You requested a password change",
           message,
