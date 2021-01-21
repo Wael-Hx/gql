@@ -1,4 +1,8 @@
-const { ApolloError, AuthenticationError } = require("apollo-server");
+const {
+  ApolloError,
+  AuthenticationError,
+  UserInputError,
+} = require("apollo-server");
 const Profile = require("../db/models/Profile");
 const { removeEmptyValues } = require("../utils/validateInput");
 
